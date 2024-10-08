@@ -1,34 +1,27 @@
-install npm: 
-sudo apt-get install -y nodejs
-sudo apt-get install npm
-npm install -g npm@latest
-sudo npm install -g express-generator 
+# Instructions for starting the project:
 
-Mongodb: 
-    wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add -
+```shell
+$ npm i
+$ npm start
+```
 
-    sudo apt-get install gnupg
-    wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add -
+# Database notice:
 
-    echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list
+Regarding the database, its name is "auth" and the name of the collection is "user".  
+You just need to have MongoDB installed, the database and the collection will generate themselves if you have created a user from the web application.
 
-    sudo apt-get update
+# Notice on roles:
 
-    sudo apt-get install -y mongodb-org
+you have to do the update in the database to change the role of a user. Either from the graphical interface MongoDB Compass, or in command line with mongosh:
 
-    sudo systemctl start mongod
+```shell
+$ mongosh
+$ use auth
+$ db.user.update({username: 'username'},{$set:{role:'admin'}})
+```
 
-    IF "Failed to start mongod.service: Unit mongod.service not found" 
-        sudo systemctl daemon-reload
+to check if the change has been made:
 
-    sudo systemctl status mongod
-
-    sudo systemctl enable mongod
-
-
-https://medium.com/cyber4people/setup-mongodb-in-kali-linux-3ab86731e3ec
-
-
-
-npm install -g nodemon
-
+```shell
+$ db.user.find({username: 'username'})
+```
