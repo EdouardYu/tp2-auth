@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="style/style.css"
+      media="screen"
+      type="text/css"
+    />
+    <title>Sign Up</title>
+  </head>
+  <body>
+    <div id="container">
+      <form
+        name="registerForm"
+        action="/register"
+        method="POST"
+        onsubmit="return validateForm(event)"
+      >
+        <h1>Sign up</h1>
+        <div id="errorPopup" class="error-popup"></div>
+
+        <label for="username"><b>Nom d'utilisateur</b></label>
+        <input
+          type="text"
+          placeholder="Entrer le nom d'utilisateur"
+          name="username"
+          required
+        />
+
+        <label for="email"><b>Email</b></label>
+        <input
+          type="text"
+          placeholder="Enter your email"
+          name="email"
+          required
+        />
+
+        <label for="password"><b>Mot de passe</b></label>
+        <input
+          type="password"
+          placeholder="Entrer le mot de passe"
+          name="password"
+          required
+        />
+
+        <label for="passwordConfirm"><b>Confirmer le mot de passe</b></label>
+        <input
+          type="password"
+          placeholder="Entrer le mot de passe"
+          name="passwordConfirm"
+          required
+        />
+
+        <input type="submit" id="submit" value="REGISTER" />
+        <a href="/login" class="btn btn-success ml-2"
+          >Already registered? Login</a
+        >
+      </form>
+    </div>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>
