@@ -2,6 +2,7 @@ const express = require("express");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
 const dotenv = require("dotenv");
 
@@ -9,25 +10,90 @@ const User = require("./db/model/userModel");
 const connectDB = require("./db/mongoose");
 
 dotenv.config();
+const app = express();
 
-var app = express();
-const router = express.Router();
+passport.use(
+  new LocalStrategy(async (username, password, done) => {
+    try {
+      const user = await User.findOne({ username: username });
+      if (!user) {
+        return done(null, false, {
+          message: "Incorrect username or password",
+        });
+      }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return done(null, false, {
+          message: "Incorrect username or password",
+        });
+      }
+      return done(null, user);
+    } catch (error) {
+      return done(error);
+    }
+  })
+);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
 
-app.set("view engine", "ejs");
-
-app.use(express.static(__dirname + "/public"));
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+});
 
 const dbName = process.env.DBNAME || "auth";
 connectDB(dbName);
 
-router.get("/", function (req, res) {
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname + "/public"));
+app.set("view engine", "ejs");
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "session_secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false },
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get("/", (req, res) => {
   res.render("index");
 });
 
-router.get("/register", function (req, res) {
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+app.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+
+    if (!user) {
+      return res.status(400).json({ errors: info.message });
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      return res.status(200).json({});
+    });
+  })(req, res, next);
+});
+
+app.get("/register", (req, res) => {
   res.render("register");
 });
 
@@ -37,23 +103,21 @@ app.post(
     body("username")
       .trim()
       .isAlphanumeric()
-      .withMessage("Username must contain only letters and numbers (back)"),
-    body("email")
-      .isEmail()
-      .withMessage("Please enter a valid email address (back)"),
+      .withMessage("Username must contain only letters and numbers"),
+    body("email").isEmail().withMessage("Please enter a valid email address"),
     body("password").custom((value) => {
       const strongPasswordRegex =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}$/;
       if (!strongPasswordRegex.test(value)) {
         throw new Error(
-          "Password must be at least 12 characters long, contain uppercase, lowercase, numbers, and special characters (back)"
+          "Password must be at least 12 characters long, contain uppercase, lowercase, numbers, and special characters"
         );
       }
       return true;
     }),
     body("passwordConfirm").custom((value, { req }) => {
       if (value !== req.body.password) {
-        throw new Error("Passwords do not match (back)");
+        throw new Error("Passwords do not match");
       }
       return true;
     }),
@@ -67,7 +131,6 @@ app.post(
         .join("<br>");
       return res.status(400).json({ errors: groupedErrors });
     }
-    console.log(req.body);
 
     try {
       const { username, email, password } = req.body;
@@ -95,39 +158,41 @@ app.post(
       });
 
       await user.save();
-
-
+      res.redirect("/login");
+    } catch (error) {
+      console.error("Error saving user:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-);
-
-router.get("/login", function (req, res) {
-  res.render("login");
-});
-
-app.post("/login", function (req, res) {
-  console.log(req.body);
-
-  // Authenticate user
-
-  // If success redirect to home page
-  // res.render('home');
-});
-
-router.get(
-  "/callback",
-  passport.authenticate("auth0", {
-    failureRedirect: "/login",
-  }),
-  (req, res) => {
-    res.redirect("/dashboard");
   }
 );
 
+app.get("/home", isAuthenticated, (req, res) => {
+  const userInfo = {
+    username: req.user.username,
+    email: req.user.email,
+    role: req.user.role,
+  };
 
-app.use("/", router);
+  res.render("home", { user: userInfo });
+});
+
+app.get("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
+});
+
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login");
+}
 
 var port = process.env.PORT || 9000;
-
 app.listen(port, function () {
-  console.log("Server Has Started! port: ", port);
+  console.log("Server has started on port:", port);
 });

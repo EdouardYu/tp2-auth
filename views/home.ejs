@@ -1,15 +1,22 @@
 <html>
-    <head>
-       <meta charset="utf-8">
-        <!-- importer le fichier de style -->
-        <link rel="stylesheet" href="/style/style.css" media="screen" type="text/css" />
+  <head>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="/style/style.css"
+      media="screen"
+      type="text/css"
+    />
+  </head>
+  <body>
+    <div id="container">
+      <h1>Hello <%= user.username %></h1>
+      <p>Email: <%= user.email %></p>
+      <p>Role: <%= user.role %></p>
+    </div>
 
-    </head>
-    <body>
-        <div id="container">
-
-            <h1>Hello User</h1><br /><br />
-
-        </div>
-    </body>
+    <form action="/logout" method="GET" id="logout-form">
+      <input type="submit" value="LOGOUT" />
+    </form>
+  </body>
 </html>

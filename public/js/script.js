@@ -70,3 +70,45 @@ window.validateForm = async function (e) {
     return false;
   }
 };
+
+window.validateLoginForm = async function (e) {
+  e.preventDefault();
+
+  const username = document.forms["loginForm"]["username"].value;
+  const password = document.forms["loginForm"]["password"].value;
+
+  const errorPopup = document.getElementById("errorPopup");
+  errorPopup.style.display = "none";
+
+  const formData = {
+    username: username,
+    password: password,
+  };
+
+  try {
+    const response = await fetch("/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (response.status === 400) {
+      const data = await response.json();
+      errorPopup.innerHTML = data.errors;
+      errorPopup.style.display = "block";
+    } else if (response.status === 200) {
+      window.location.href = "/home";
+    } else {
+      throw new Error();
+    }
+  } catch (error) {
+    console.error("Erreur:", error);
+    errorPopup.innerHTML =
+      "An unexpected error occurred. Please try again later";
+    errorPopup.style.display = "block";
+  }
+
+  return false;
+};

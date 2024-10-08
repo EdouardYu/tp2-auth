@@ -77,3 +77,9 @@ input[type="submit"]:hover {
   margin-bottom: 15px;
   display: none;
 }
+
+#logout-form {
+  width: 100%;
+  max-width: 200px;
+  margin: 20px auto;
+}
