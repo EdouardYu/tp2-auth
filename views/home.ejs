@@ -13,6 +13,9 @@
       <h1>Hello <%= user.username %></h1>
       <p>Email: <%= user.email %></p>
       <p>Role: <%= user.role %></p>
+      <% if (user.role === 'admin') { %>
+      <a href="/users">View Users</a>
+      <% } %>
     </div>
 
     <form action="/logout" method="GET" id="logout-form">

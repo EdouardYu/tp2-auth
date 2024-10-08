@@ -1,0 +1,19 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Users List</title>
+    <link rel="stylesheet" href="/style/style.css" />
+  </head>
+  <body>
+    <h1>List of Users</h1>
+    <ul>
+      <% if (users && users.length > 0) { %> <% users.forEach(user => { %>
+      <li><%= user.username %> - <%= user.email %></li>
+      <% }) %> <% } else { %>
+      <li>No users found</li>
+      <% } %>
+    </ul>
+    <a href="/home">Go Back to Home</a>
+  </body>
+</html>

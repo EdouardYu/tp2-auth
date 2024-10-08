@@ -8,7 +8,8 @@ const dotenv = require("dotenv");
 
 const User = require("./db/model/userModel");
 const connectDB = require("./db/mongoose");
-const { roles } = require("./auth/roles");
+const { roles } = require("./autorisation/roles");
+const userController = require("./autorisation/userController");
 
 dotenv.config();
 const app = express();
@@ -192,6 +193,13 @@ function isAuthenticated(req, res, next) {
   }
   res.redirect("/login");
 }
+
+app.get(
+  "/users",
+  userController.allowIfLoggedin,
+  userController.grantAccess("readAny", "profile"),
+  userController.getUsers
+);
 
 var port = process.env.PORT || 9000;
 app.listen(port, function () {
