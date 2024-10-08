@@ -8,6 +8,7 @@ const dotenv = require("dotenv");
 
 const User = require("./db/model/userModel");
 const connectDB = require("./db/mongoose");
+const { roles } = require("./auth/roles");
 
 dotenv.config();
 const app = express();
@@ -157,11 +158,11 @@ app.post(
         role: "user",
       });
 
-      await user.save();
-      res.redirect("/login");
+      //await user.save();
+      res.status(200).json({});
     } catch (error) {
       console.error("Error saving user:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({});
     }
   }
 );
