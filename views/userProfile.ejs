@@ -1,0 +1,57 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/style/style.css" media="screen" type="text/css" />
+    <title>Gestion des utilisateurs</title>
+</head>
+<body>
+    <h1>Profil de <%= user.username %></h1>
+    <form action="/user/<%= user._id %>" method="POST">
+        <input type="hidden" name="_method" value="PUT">
+        <label for="username">Nom d'utilisateur:</label>
+        <<input type="text" name="username" value="<%= user.username %>" <%= user.role !== 'admin' ? 'disabled' : '' %>><br>
+
+        <label for="email">Email:</label>
+        <input type="text" name="email" value="<%= user.email %>" disabled="<%= user.role !== 'admin' %>"><br>
+
+        <button type="submit" <%= user.role !== 'admin' ? 'disabled' : '' %>>Modifier le profil</button>
+    </form>
+
+    <% if (user.role === 'admin') { %>
+    <h2>Gérer les utilisateurs</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom d'utilisateur</th>
+                <th>Email</th>
+                <th>Rôle</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(function(u) { %>
+                <tr>
+                    <td><%= u.username %></td>
+                    <td><%= u.email %></td>
+                    <td>
+                        <form action="/admin/users/<%= u._id %>/role" method="POST">
+                            <select name="role">
+                                <option value="user" <%= u.role === 'user' ? 'selected' : '' %>>User</option>
+                                <option value="admin" <%= u.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                            </select>
+                            <button type="submit">Changer de rôle</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="/admin/users/<%= u._id %>/delete" method="POST">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+<% } %>
+</body>
+</html>>

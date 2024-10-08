@@ -3,13 +3,21 @@
        <meta charset="utf-8">
         <!-- importer le fichier de style -->
         <link rel="stylesheet" href="/style/style.css" media="screen" type="text/css" />
+        <title>Accueil</title>
 
     </head>
     <body>
         <div id="container">
 
-            <h1>Hello User</h1><br /><br />
+            <h1>Hello, <%= user.username %>!</h1>
 
-        </div>
-    </body>
+            <% if (user.role === 'admin') { %>
+                <p>Bienvenue, administrateur. Vous avez les droits d'administration.</p>
+            <a href="/admin/users">Gérer les utilisateurs</a>
+            <% } else { %>
+                <p>Bienvenue, utilisateur. Vous avez des droits d'utilisateur normal.</p>
+            <% } %>
+
+    <a href="/logout">Se déconnecter</a>
+</body>
 </html>
