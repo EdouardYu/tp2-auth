@@ -158,7 +158,7 @@ app.post(
         role: "user",
       });
 
-      //await user.save();
+      await user.save();
       res.status(200).json({});
     } catch (error) {
       console.error("Error saving user:", error);
