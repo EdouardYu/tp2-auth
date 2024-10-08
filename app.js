@@ -195,12 +195,6 @@ router.put('/user/:userId', grantAccess('updateOwn', 'profile'), async (req, res
     res.redirect('/profile');
 });
 
-router.delete('/admin/users/:userId/delete', grantAccess('deleteAny', 'profile'), async (req, res) => {
-    const { userId } = req.params;
-    await User.findByIdAndDelete(userId);
-    res.redirect('/admin/users');
-});
-
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {

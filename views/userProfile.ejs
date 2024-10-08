@@ -5,18 +5,6 @@
     <title>Gestion des utilisateurs</title>
 </head>
 <body>
-    <h1>Profil de <%= user.username %></h1>
-    <form action="/user/<%= user._id %>" method="POST">
-        <input type="hidden" name="_method" value="PUT">
-        <label for="username">Nom d'utilisateur:</label>
-        <<input type="text" name="username" value="<%= user.username %>" <%= user.role !== 'admin' ? 'disabled' : '' %>><br>
-
-        <label for="email">Email:</label>
-        <input type="text" name="email" value="<%= user.email %>" disabled="<%= user.role !== 'admin' %>"><br>
-
-        <button type="submit" <%= user.role !== 'admin' ? 'disabled' : '' %>>Modifier le profil</button>
-    </form>
-
     <% if (user.role === 'admin') { %>
     <h2>Gérer les utilisateurs</h2>
     <table>
@@ -33,6 +21,7 @@
                 <tr>
                     <td><%= u.username %></td>
                     <td><%= u.email %></td>
+                    <td><%= u.role %></td>
                     <td>
                         <form action="/admin/users/<%= u._id %>/role" method="POST">
                             <select name="role">
@@ -40,12 +29,6 @@
                                 <option value="admin" <%= u.role === 'admin' ? 'selected' : '' %>>Admin</option>
                             </select>
                             <button type="submit">Changer de rôle</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form action="/admin/users/<%= u._id %>/delete" method="POST">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <button type="submit">Supprimer</button>
                         </form>
                     </td>
                 </tr>
